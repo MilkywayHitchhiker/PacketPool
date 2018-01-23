@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "LockFreePacketPool.h"
+#include "PacketPool.h"
 #include "lib\Library.h"
 
 int main()

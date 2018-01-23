@@ -134,7 +134,7 @@ protected:
 	int iRefCnt;
 
 public :
-	static CMemoryPool<Packet> *PacketPool;
+	static Hitchhiker::CMemoryPool<Packet> *PacketPool;
 
 public :
 	
@@ -142,7 +142,7 @@ public :
 	{
 		if ( PacketPool == NULL )
 		{
-			PacketPool = new CMemoryPool<Packet> (0);
+			PacketPool = new Hitchhiker::CMemoryPool<Packet> (0);
 		}
 		return;
 	}

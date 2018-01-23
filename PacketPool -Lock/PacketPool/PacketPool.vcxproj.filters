@@ -42,7 +42,7 @@
     <ClInclude Include="lib\System_Log.h">
       <Filter>소스 파일\lib</Filter>
     </ClInclude>
-    <ClInclude Include="LockFreePacketPool.h">
+    <ClInclude Include="PacketPool.h">
       <Filter>소스 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -59,7 +59,7 @@
     <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="LockFreePacketPool.cpp">
+    <ClCompile Include="PacketPool.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
