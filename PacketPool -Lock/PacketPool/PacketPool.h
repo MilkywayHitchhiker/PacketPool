@@ -8,7 +8,8 @@ class Packet
 public:
 	enum PACKET
 	{
-		BUFFER_DEFAULT			= 10000		// 패킷의 기본 버퍼 사이즈.
+		BUFFER_DEFAULT			= 10000,	// 패킷의 기본 버퍼 사이즈.
+		Header_MAX_DEFAULT		= 5			// 헤더의 최대 사이즈.
 	};
 
 	// 생성자, 파괴자.
@@ -24,7 +25,7 @@ public:
 	//RefCnt를 1 증가시킴. 
 	void	Add (void);
 
-	// RefCnt를 하나 차감시키고 REfCnt가 0이 되면 자기자신 delete하고 빠져나옴.
+	// 자기자신을 delete하고 빠져나옴.
 	void	Release(void);
 
 
@@ -33,15 +34,39 @@ public:
 
 
 	// 버퍼 사이즈 얻기.
-	int		GetBufferSize(void) { return _iBufferSize; }
+	int		GetBufferSize (void)
+	{
+		return _iBufferSize;
+	}
+
+	// 현재 사용중인 데이터 사이즈 얻기.
+	int		GetDataSize (void)
+	{
+		return _iDataSize;
+	}
+
+	//현재 사용중인 헤더 사이즈 얻기.
+	int		GetHeaderSize (void)
+	{
+		return _iHeaderSize;
+	}
 
 	// 현재 사용중인 사이즈 얻기.
-	int		GetDataSize(void) { return _iDataSize; }
-
-
+	int		GetUseSize (void)
+	{
+		return _iDataSize + _iHeaderSize;
+	}
 
 	// 버퍼 포인터 얻기.
-	char	*GetBufferPtr(void) { return Buffer; }
+	char	*GetBufferPtr (void)
+	{
+		return DataFieldStart;
+	}
+	char	*GetHeaderPtr (void)
+	{
+		return HeaderFieldStart;
+	}
+
 
 	// 버퍼 Pos 이동.
 	int		MoveWritePos(int iSize);
@@ -98,9 +123,15 @@ public:
 	// Return 복사한 사이즈.
 	int		PutData(char *chpSrc, int iSrcSize);
 
+	// 헤더 삽입.
+	// Return 복사한 사이즈
+	int		PutHeader (char *chpSrc, int iSrcSize);
+
+	// short 헤더 삽입.
+	// Return 복사한 사이즈
+	int		PutHeader (short chpSrc);
 
 protected:
-
 	//------------------------------------------------------------
 	// 패킷버퍼 / 버퍼 사이즈.
 	//------------------------------------------------------------
@@ -114,7 +145,7 @@ protected:
 	//------------------------------------------------------------
 	char	*DataFieldStart;
 	char	*DataFieldEnd;
-
+	char	*HeaderFieldStart;
 
 	//------------------------------------------------------------
 	// 버퍼의 읽을 위치, 넣을 위치.
@@ -127,6 +158,7 @@ protected:
 	// 현재 버퍼에 사용중인 사이즈.
 	//------------------------------------------------------------
 	int		_iDataSize;
+	int		_iHeaderSize;
 
 	//------------------------------------------------------------
 	// 현재 Packet의 RefCnt
@@ -160,6 +192,8 @@ public :
 			return PacketPool->Free (p);
 		}
 	}
+
+
 
 
 };

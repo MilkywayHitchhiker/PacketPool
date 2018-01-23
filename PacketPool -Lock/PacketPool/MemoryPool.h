@@ -93,7 +93,7 @@ namespace Hitchhiker
 		//				(bool) 생성자 호출 여부.
 		// Return:
 		//////////////////////////////////////////////////////////////////////////
-		CMemoryPool (int iBlockNum = 0, bool bPlacementNew = false)
+		CMemoryPool (int iBlockNum = 0, bool bPlacementNew = true)
 		{
 			HeadNode = NULL;
 			PlacementNew = bPlacementNew;
@@ -159,6 +159,7 @@ namespace Hitchhiker
 				st_BLOCK_NODE *p = NewBlock + cnt;
 
 				p->FrontSafeLine = SafeLine;
+				new(&p->T) DATA ();
 				p->stpNextBlock = HeadNode;
 				p->LastSafeLine = SafeLine;
 
@@ -263,9 +264,14 @@ namespace Hitchhiker
 				//블럭의 최대치가 지정되어있지 않은 경우 새로 할당 받아서 리턴해준다.
 				st_BLOCK_NODE *p =(st_BLOCK_NODE *) malloc (sizeof (st_BLOCK_NODE));
 				p->FrontSafeLine = SafeLine;
-				new(&p->T) DATA ();
 				p->stpNextBlock = NULL;
 				p->LastSafeLine = SafeLine;
+
+				//만약 플레이스먼트 뉴를 사용중이라면 여기서 블럭에 대한 생성자를 셋팅해준다.
+				if ( PlacementNew == true )
+				{
+					new(&p->T) DATA ();
+				}
 
 				MemoryPoolNodeCnt++;
 				UseSize += sizeof (st_BLOCK_NODE);
@@ -308,12 +314,6 @@ namespace Hitchhiker
 				return false;
 			}
 
-			//받은 포인터가 메모리풀의 블럭포인터가 맞다면 Placementnew확인후 파괴자 호출
-			if ( PlacementNew == true )
-			{
-				p->T.~DATA ();
-			}
-
 			//받은 블럭의 넥스트 블럭 포인터 셋팅 후 헤드에 꼽아 넣는다.
 			p->stpNextBlock = HeadNode;
 			HeadNode = p;
@@ -329,7 +329,7 @@ namespace Hitchhiker
 		// Parameters: 없음.
 		// Return: (int) 메모리 풀 내부 전체 개수
 		//////////////////////////////////////////////////////////////////////////
-		int		GetMemoryPoolFullCount (void)
+		int		GetFullCount (void)
 		{
 			return MemoryPoolNodeCnt;
 		}
@@ -340,7 +340,7 @@ namespace Hitchhiker
 		// Parameters: 없음.
 		// Return: (int) 사용중인 블럭 개수.
 		//////////////////////////////////////////////////////////////////////////
-		int		GetUseCount (void)
+		int		GetAllocCount (void)
 		{
 			return UseSize / sizeof(st_BLOCK_NODE);
 		}

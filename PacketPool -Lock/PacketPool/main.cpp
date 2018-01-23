@@ -23,32 +23,18 @@ int main()
 			*p[Cnt] << 100;
 		}
 
+		short Header = 2;
+		for ( Cnt = 0; Cnt < 1000; Cnt++ )
+		{
+			p[Cnt]->PutHeader (Header);
+		}
+
 
 		printf ("\nFull : %d \n", Packet::PacketPool->GetFullCount ());
 		printf ("Use : %d \n", Packet::PacketPool->GetAllocCount ());
 		printf ("Free : %d \n", Packet::PacketPool->GetFreeCount ());
 
-		int ref;
-		for ( Cnt = 0; Cnt < 1000; Cnt++ )
-		{
-			*p[Cnt] >> ref;
-			if ( ref != 100 )
-			{
-				CCrashDump::Crash ();
-			}
-		}
 
-		for ( Cnt = 0; Cnt < 1000; Cnt++ )
-		{
-			if ( !Packet::Free (p[Cnt]) )
-			{
-				CCrashDump::Crash ();
-			}
-		}
-
-		printf ("Full : %d \n", Packet::PacketPool->GetFullCount ());
-		printf ("Use : %d \n", Packet::PacketPool->GetAllocCount ());
-		printf ("Free : %d \n\n", Packet::PacketPool->GetFreeCount ());
 
 		Sleep (999);
 	}

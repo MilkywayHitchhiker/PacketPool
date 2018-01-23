@@ -55,7 +55,6 @@ Packet::~Packet()
 void Packet::Initial(int iBufferSize)
 {
 	_iBufferSize = iBufferSize;
-
 	if ( NULL == Buffer )
 	{
 		if ( BUFFER_DEFAULT < _iBufferSize )
@@ -70,12 +69,13 @@ void Packet::Initial(int iBufferSize)
 		}
 	}
 
-	DataFieldStart = Buffer;
-	DataFieldEnd = Buffer + _iBufferSize;
+	DataFieldStart = Buffer + Header_MAX_DEFAULT;
+	DataFieldEnd = Buffer + (_iBufferSize - Header_MAX_DEFAULT);
 
-	ReadPos = WritePos = DataFieldStart;
+	ReadPos = WritePos = HeaderFieldStart = DataFieldStart;
 
 	_iDataSize = 0;
+	_iHeaderSize = 0;
 
 	iRefCnt = 1;
 	
@@ -105,12 +105,13 @@ void Packet::Release (void)
 void Packet::Clear(void)
 {
 
-	DataFieldStart = Buffer;
-	DataFieldEnd = Buffer + _iBufferSize;
+	DataFieldStart = Buffer + Header_MAX_DEFAULT;
+	DataFieldEnd = Buffer + (_iBufferSize - Header_MAX_DEFAULT);
 
-	ReadPos = WritePos = DataFieldStart;
+	ReadPos = WritePos = HeaderFieldStart = DataFieldStart;
 
 	_iDataSize = 0;
+	_iHeaderSize = 0;
 }
 
 
@@ -316,4 +317,38 @@ int Packet::PutData(char *chpSrc, int iSrcSize)
 	_iDataSize += iSrcSize;
 
 	return iSrcSize;
+}
+
+// 헤더 삽입
+int	Packet::PutHeader (char *chpSrc, int iSrcSize)
+{
+	//넣을 자리가 없다면.
+	if ( HeaderFieldStart - iSrcSize < Buffer )
+		return 0;
+
+	memcpy (HeaderFieldStart - iSrcSize, chpSrc, iSrcSize);
+	HeaderFieldStart -= iSrcSize;
+
+	_iHeaderSize += iSrcSize;
+
+	return iSrcSize;
+}
+
+// short 헤더 삽입.
+int		Packet::PutHeader (short chpSrc)
+{
+	//넣을 자리가 없다면.
+	if ( HeaderFieldStart - sizeof(short) < Buffer )
+		return 0;
+
+	memcpy (HeaderFieldStart - 2, &chpSrc, 2);
+
+	short *p = ( short * )(HeaderFieldStart - 2);
+	*p = chpSrc;
+
+	HeaderFieldStart -= 2;
+
+	_iHeaderSize += 2;
+
+	return 2;
 }
