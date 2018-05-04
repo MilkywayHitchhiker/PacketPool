@@ -341,8 +341,6 @@ int		Packet::PutHeader (short chpSrc)
 	if ( HeaderFieldStart - sizeof(short) < Buffer )
 		return 0;
 
-	memcpy (HeaderFieldStart - 2, &chpSrc, 2);
-
 	short *p = ( short * )(HeaderFieldStart - 2);
 	*p = chpSrc;
 
